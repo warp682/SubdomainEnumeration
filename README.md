@@ -2,11 +2,12 @@
 All about subdomain enumeration
 
 ## Useful sources
+* [Jason Haddix The Bug Hunters Methodology v3(ish)](https://docs.google.com/presentation/d/1R-3eqlt31sL7_rj2f1_vGEqqb7hcx4vxX_L7E23lJVo/edit?usp=sharing)
+* [Esoteric sub-domain enumeration techniques - Bharath, from Bugcrowd's LevelUp 2017](https://www.youtube.com/watch?v=e_Gq99CKAys )
 * https://www.huque.com/talks/2013-11-dnssec-tutorial-huque.pdf
 * https://blog.sweepatic.com/art-of-subdomain-enumeration/
 * https://appsecco.com/books/subdomain-enumeration/
 * https://pentester.land/cheatsheets/2018/11/14/subdomains-enumeration-cheatsheet.html
-* [Jason Haddix The Bug Hunters Methodology v3(ish)](https://docs.google.com/presentation/d/1R-3eqlt31sL7_rj2f1_vGEqqb7hcx4vxX_L7E23lJVo/edit?usp=sharing)
 
 ## Scrapping
 
@@ -27,7 +28,7 @@ https://developers.google.com/custom-search/json-api/v1/overview
 https://developers.google.com/custom-search/json-api/v1/reference/cse/list
 https://console.developers.google.com/apis/credentials //Create Api Key
 https://cse.google.com/cse/ //Create cx
-https://www.googleapis.com/customsearch/v1?key=[GoogleApiKey]&cx=[cx]&fields=items(link)&q=inurl:[fqdn]&fields=queries,items(displayLink)
+curl https://www.googleapis.com/customsearch/v1?key=[GoogleApiKey]&cx=[cx]&fields=items(link)&q=inurl:[fqdn]&fields=queries,items(displayLink)
 ```
 
 #### Bing:
@@ -60,16 +61,21 @@ dig axfr zonetransfer.me @nsztm1.digi.ninja.
 ```
 
 ### DNSSEC Zone walking
-Tools
+
+#### NSEC
+##### Tools
 ```
 sudo apt-get install ldns-utils
 sudo yum install ldns (sudo yum install epel-release -y)
+
+ldns-walk @name_server domain_name
 ```
-#### NSEC
+##### Manual
 ```bash
 dig nsec [fqdn] +short
 fqdn=[fqdn]; x=$fqdn; while [[ $x != "$1." ]];do x=$(dig nsec $x +short | cut -d' ' -f1); [[ $x = *'root-servers.net.'* ]] && break; echo $x; done
-
+```
+```
 #!/bin/bash
 x=$1
 while [[ $x != "$1." ]];do
@@ -77,6 +83,22 @@ while [[ $x != "$1." ]];do
     [[ $x = *'root-servers.net.'* ]] && exit 0; echo $x
 done
 ```
+#### NSEC3
+##### Tools
+```
+# Installing nsec3walker
+$ wget https://dnscurve.org/nsec3walker-20101223.tar.gz
+$ tar -xzf nsec3walker-20101223.tar.gz
+$ cd nsec3walker-20101223
+$ make
+
+# Collect NSEC3 hashes of a domain
+$ ./collect insecuredns.com > insecuredns.com.collect
+
+# Undo the hashing, expose the sub-domain information.
+$ ./unhash < insecuredns.com.collect > insecuredns.com.unhash
+```
+
 ### Enum Tools
 * https://github.com/OWASP/Amass
 * https://github.com/subfinder/subfinder
