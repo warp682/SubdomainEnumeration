@@ -51,6 +51,9 @@ http://ptrarchive.com/tools/search3.htm?label=[fqdn]&date=ALL
 https://www.threatcrowd.org/searchApi/v2/domain/report/?domain=[fqdn]
 https://www.threatminer.org/domain.php?q=[fqdn]&api=True&rt=5
 https://findsubdomains.com/subdomains-of/[fqdn]
+https://securitytrails.com/list/apex_domain/[fqdn]
+https://api.securitytrails.com/v1/domain/[fqdn]/subdomains" -H 'apikey: [apikey]' //API
+
 ```
 
 ### Zone Transfer
